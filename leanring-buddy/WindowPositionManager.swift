@@ -211,15 +211,18 @@ class WindowPositionManager {
         // Get position and size of the focused window
         var positionValue: AnyObject?
         var sizeValue: AnyObject?
-        guard AXUIElementCopyAttributeValue(focusedWindow as! AXUIElement, kAXPositionAttribute as CFString, &positionValue) == .success,
-              AXUIElementCopyAttributeValue(focusedWindow as! AXUIElement, kAXSizeAttribute as CFString, &sizeValue) == .success else {
+        guard let axFocusedWindow = focusedWindow as? AXUIElement,
+              AXUIElementCopyAttributeValue(axFocusedWindow, kAXPositionAttribute as CFString, &positionValue) == .success,
+              AXUIElementCopyAttributeValue(axFocusedWindow, kAXSizeAttribute as CFString, &sizeValue) == .success else {
             return
         }
 
         var otherPosition = CGPoint.zero
         var otherSize = CGSize.zero
-        guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &otherPosition),
-              AXValueGetValue(sizeValue as! AXValue, .cgSize, &otherSize) else {
+        guard let axPositionValue = positionValue as? AXValue,
+              let axSizeValue = sizeValue as? AXValue,
+              AXValueGetValue(axPositionValue, .cgPoint, &otherPosition),
+              AXValueGetValue(axSizeValue, .cgSize, &otherSize) else {
             return
         }
 
